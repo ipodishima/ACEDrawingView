@@ -32,6 +32,12 @@
 #define kDefaultLineWidth       10.0f;
 #define kDefaultLineAlpha       1.0f
 
+#define kPathArray @"kPathArray"
+#define kBufferArray @"kBufferArray"
+#define kStrokeColor @"kStrokeColor"
+#define kLineAlpha @"kLineAlpha"
+#define kLineWidth @"kLineWidth"
+
 // experimental code
 #define PARTIAL_REDRAW          0
 
@@ -64,9 +70,27 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self configure];
+        //[self configure];
+        
+        self.pathArray = [NSMutableArray arrayWithArray:[aDecoder decodeObjectForKey:kPathArray]];
+        self.bufferArray = [NSMutableArray arrayWithArray:[aDecoder decodeObjectForKey:kBufferArray]];
+        self.lineColor = [UIColor colorWithString:[aDecoder decodeObjectForKey:kStrokeColor]];
+        self.lineAlpha = [aDecoder decodeFloatForKey:kLineAlpha];
+        self.lineWidth = [aDecoder decodeFloatForKey:kLineWidth];
+        
+        [self updateCacheImage:YES];
     }
     return self;
+}
+
+- (void) encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    [aCoder encodeObject:self.pathArray forKey:kPathArray];
+    [aCoder encodeObject:self.bufferArray forKey:kBufferArray];
+    [aCoder encodeObject:[self.lineColor stringFromColor] forKey:kStrokeColor];
+    [aCoder encodeFloat:self.lineAlpha forKey:kLineAlpha];
+    [aCoder encodeFloat:self.lineWidth forKey:kLineWidth];
 }
 
 - (void)configure

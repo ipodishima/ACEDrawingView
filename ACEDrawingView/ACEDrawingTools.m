@@ -25,6 +25,11 @@
 
 #import "ACEDrawingTools.h"
 
+#define kPath @"kPath"
+#define kLineColor @"kLineColor"
+#define kLineWidth @"kLineWidth"
+#define kLineAlpha @"kLineAlpha"
+
 CGPoint midPoint(CGPoint p1, CGPoint p2)
 {
     return CGPointMake((p1.x + p2.x) * 0.5, (p1.y + p2.y) * 0.5);
@@ -45,6 +50,35 @@ CGPoint midPoint(CGPoint p1, CGPoint p2)
         path = CGPathCreateMutable();
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        self.lineCapStyle = kCGLineCapRound;
+        UIBezierPath *bezierPath = [aDecoder decodeObjectForKey:kPath];
+        if (bezierPath)
+            path = CGPathCreateMutableCopy([bezierPath CGPath]);
+        else
+            path = CGPathCreateMutable();
+
+        self.lineAlpha = [aDecoder decodeFloatForKey:kLineAlpha];
+        self.lineColor = [UIColor colorWithString:[aDecoder decodeObjectForKey:kLineColor]];
+        self.lineWidth = [aDecoder decodeFloatForKey:kLineWidth];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [super encodeWithCoder:aCoder];
+    [aCoder encodeObject:[self.lineColor stringFromColor] forKey:kLineColor];
+    [aCoder encodeFloat:self.lineWidth forKey:kLineWidth];
+    [aCoder encodeFloat:self.lineAlpha forKey:kLineAlpha];
+    
+    if (path)
+        [aCoder encodeObject:[UIBezierPath bezierPathWithCGPath:path] forKey:kPath];
 }
 
 - (void)setInitialPoint:(CGPoint)firstPoint
