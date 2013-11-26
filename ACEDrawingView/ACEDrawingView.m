@@ -25,6 +25,7 @@
 
 #import "ACEDrawingView.h"
 #import "ACEDrawingTools.h"
+#import "ACEDrawingView+DToolProtocol.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -37,11 +38,12 @@
 #define kStrokeColor @"kStrokeColor"
 #define kLineAlpha @"kLineAlpha"
 #define kLineWidth @"kLineWidth"
+#define kToolID @"kToolID"
 
 // experimental code
 #define PARTIAL_REDRAW          0
 
-@interface ACEDrawingView () {
+@interface ACEDrawingView () <DToolProtocol> {
     CGPoint currentPoint;
     CGPoint previousPoint1;
     CGPoint previousPoint2;
@@ -56,6 +58,7 @@
 #pragma mark -
 
 @implementation ACEDrawingView
+@synthesize toolID = _toolID;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -77,7 +80,7 @@
         self.lineColor = [UIColor colorWithString:[aDecoder decodeObjectForKey:kStrokeColor]];
         self.lineAlpha = [aDecoder decodeFloatForKey:kLineAlpha];
         self.lineWidth = [aDecoder decodeFloatForKey:kLineWidth];
-        
+        self.toolID = [aDecoder decodeIntegerForKey:kToolID];
         [self updateCacheImage:YES];
     }
     return self;
@@ -91,6 +94,7 @@
     [aCoder encodeObject:[self.lineColor stringFromColor] forKey:kStrokeColor];
     [aCoder encodeFloat:self.lineAlpha forKey:kLineAlpha];
     [aCoder encodeFloat:self.lineWidth forKey:kLineWidth];
+    [aCoder encodeInteger:self.toolID forKey:kToolID];
 }
 
 - (void)configure
