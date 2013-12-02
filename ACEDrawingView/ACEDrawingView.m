@@ -47,6 +47,7 @@
     CGPoint currentPoint;
     CGPoint previousPoint1;
     CGPoint previousPoint2;
+    BOOL _hasMoved;
 }
 
 @property (nonatomic, strong) NSMutableArray *pathArray;
@@ -219,6 +220,8 @@
     
     [self.currentTool setInitialPoint:currentPoint];
     
+    _hasMoved = NO;
+    
     // call the delegate
     if ([self.delegate respondsToSelector:@selector(drawingView:willBeginDrawUsingTool:)]) {
         [self.delegate drawingView:self willBeginDrawUsingTool:self.currentTool];
@@ -229,6 +232,8 @@
 {
     // save all the touches in the path
     UITouch *touch = [touches anyObject];
+    
+    _hasMoved = YES;
     
     previousPoint2 = previousPoint1;
     previousPoint1 = [touch previousLocationInView:self];
@@ -274,7 +279,18 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     // make sure a point is recorded
-    [self touchesEnded:touches withEvent:event];
+    //[self touchesEnded:touches withEvent:event];
+    [self undoLatestStep];
+
+    if (_hasMoved) {
+        _hasMoved = NO;
+        //[self undoLatestStep];
+        // clear the current tool
+        self.currentTool = nil;
+        
+        // clear the redo queue
+        [self.bufferArray removeAllObjects];
+    }
 }
 
 
