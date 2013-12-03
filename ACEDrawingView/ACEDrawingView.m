@@ -233,11 +233,11 @@
     // save all the touches in the path
     UITouch *touch = [touches anyObject];
     
-    _hasMoved = YES;
-    
     previousPoint2 = previousPoint1;
     previousPoint1 = [touch previousLocationInView:self];
     currentPoint = [touch locationInView:self];
+    
+    if (!CGPointEqualToPoint(previousPoint1, currentPoint)) _hasMoved = YES;
     
     if ([self.currentTool isKindOfClass:[ACEDrawingPenTool class]]) {
         CGRect bounds = [(ACEDrawingPenTool*)self.currentTool addPathPreviousPreviousPoint:previousPoint2 withPreviousPoint:previousPoint1 withCurrentPoint:currentPoint];
@@ -271,8 +271,15 @@
     [self.bufferArray removeAllObjects];
     
     // call the delegate
-    if ([self.delegate respondsToSelector:@selector(drawingView:didEndDrawUsingTool:)]) {
-        [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
+    if (_hasMoved)
+    {
+        if ([self.delegate respondsToSelector:@selector(drawingView:didEndDrawUsingTool:)]) {
+            [self.delegate drawingView:self didEndDrawUsingTool:self.currentTool];
+        }
+    }
+    else
+    {
+        [self undoLatestStep];
     }
 }
 
