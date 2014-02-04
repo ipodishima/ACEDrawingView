@@ -47,13 +47,13 @@
     CGPoint currentPoint;
     CGPoint previousPoint1;
     CGPoint previousPoint2;
-    BOOL _hasMoved;
 }
 
 @property (nonatomic, strong) NSMutableArray *pathArray;
 @property (nonatomic, strong) NSMutableArray *bufferArray;
 @property (nonatomic, strong) id<ACEDrawingTool> currentTool;
 @property (nonatomic, strong) UIImage *image;
+@property (nonatomic, assign) BOOL hasMoved;
 @end
 
 #pragma mark -
@@ -237,7 +237,7 @@
     previousPoint1 = [touch previousLocationInView:self];
     currentPoint = [touch locationInView:self];
     
-    if (!CGPointEqualToPoint(previousPoint1, currentPoint)) _hasMoved = YES;
+    if (!CGPointEqualToPoint(previousPoint1, currentPoint)) _hasMoved |= YES;
     
     if ([self.currentTool isKindOfClass:[ACEDrawingPenTool class]]) {
         CGRect bounds = [(ACEDrawingPenTool*)self.currentTool addPathPreviousPreviousPoint:previousPoint2 withPreviousPoint:previousPoint1 withCurrentPoint:currentPoint];
@@ -286,18 +286,18 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     // make sure a point is recorded
-    //[self touchesEnded:touches withEvent:event];
-    [self undoLatestStep];
-
-    if (_hasMoved) {
-        _hasMoved = NO;
-        //[self undoLatestStep];
-        // clear the current tool
-        self.currentTool = nil;
-        
-        // clear the redo queue
-        [self.bufferArray removeAllObjects];
-    }
+    [self touchesEnded:touches withEvent:event];
+//    [self undoLatestStep];
+//
+//    if (_hasMoved) {
+//        _hasMoved = NO;
+//        //[self undoLatestStep];
+//        // clear the current tool
+//        self.currentTool = nil;
+//        
+//        // clear the redo queue
+//        [self.bufferArray removeAllObjects];
+//    }
 }
 
 

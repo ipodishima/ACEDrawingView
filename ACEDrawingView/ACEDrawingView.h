@@ -54,6 +54,7 @@ typedef enum {
 @property (nonatomic, strong, readonly) UIImage *image;
 @property (nonatomic, readonly) NSUInteger undoSteps;
 
+@property (nonatomic, readonly) BOOL hasMoved;
 
 // erase all
 - (void)clear;
